@@ -7,4 +7,22 @@ python -m venv ~/.venv
 source ~/.venv/bin/activate  # mlops-tmg-ling
 ```
 
+- Makefile: View Makefile
+- requirements.txt: View requirements.txt
+
+[comment]: <> (cli.py: View cli.py)
+
+[comment]: <> (utilscli.py: View utilscli.py)
+
+[comment]: <> (app.py: View app.py)
+
+[comment]: <> (mlib.py: View mlib.pyModel Handling Library)
+
+[comment]: <> (htwtmlb.csv: View CSV Useful for input scaling)
+
+[comment]: <> (model.joblib: View model.joblib)
+
+[comment]: <> (Dockerfile: View Dockerfile)
+
+[comment]: <> (notbooks/*.ipynb)
 
