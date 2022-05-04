@@ -1,7 +1,8 @@
 pylint==2.7.2
 pytest==6.2.5
 pytest-cov==2.10.0
-mlflow
+black==22.3.0
+mlflow==1.25.1
 tensorflow==2.7.0
 tensorflow_datasets==4.4.0
 tensorflow-recommenders==0.5.2
