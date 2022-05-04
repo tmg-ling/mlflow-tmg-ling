@@ -26,3 +26,6 @@ source ~/.venv/bin/activate  # mlops-tmg-ling
 
 [comment]: <> (notbooks/*.ipynb)
 
+```
+mlflow ui
+```
