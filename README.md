@@ -1,5 +1,5 @@
 
-[![MLops testing build](https://github.com/tmg-ling/mlops-tmg-ling/actions/workflows/main.yml/badge.svg)](https://github.com/tmg-ling/mlops-tmg-ling/actions/workflows/main.yml)
+[![MLflow testing build](https://github.com/tmg-ling/mlops-tmg-ling/actions/workflows/main.yml/badge.svg)](https://github.com/tmg-ling/mlops-tmg-ling/actions/workflows/main.yml)
 
 ![AWS Cloud build](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoidkVqS2xWdGpvOHFCZ2hFd3BqalJoQ3gvT21GUXg1YjNxd0FFRFhyRStnSkVIT3dhNmloNksxVlNXTnBOSm8zVFQxdFFzbGNVSVZ2cHBVT3ZVb2tBOFlrPSIsIml2UGFyYW1ldGVyU3BlYyI6IjdhRnNJZ1pCN3BRKy92b0wiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=main)
 
@@ -10,13 +10,20 @@ The MLflow Tracking component is an API that logs and loads the parameters, code
   - The MLmodel file is the main definition of the project from an MLflow project with information related to how to run inference on the current model.
   - The metrics folder contains the training score value of this particular run of the training process, which can be used to benchmark the model with further model improvements down the line.
   - The params folder on the first listing of folders contains the default parameters of the logistic regression model, with the different default possibilities listed transparently and stored automatically.
+- mlflow.set_experiment() 
+- mlflow.start_run() start and tear down the experiemnt in MLflow
+- mlflow.log_param to log string-type test parameters
+- mlflow.log_metrics to log numeric values
+- mlflow.log_artifact to log the entire file that execute the function to ensure traceability of the model and codee that originated in the run
 
+```bash
+python -m venv ~/.venv                  
+source ~/.venv/bin/activate  # mlops-tmg-ling
+```
 
-  
-` ``bash
-  python -m venv ~/.venv                  
- source ~/.venv/bin/activate  # mlops-tmg-ling
- ```
+```
+mlflow ui
+```
 
 - Makefile: View Makefile
 - requirements.txt: View requirements.txt
@@ -36,7 +43,3 @@ The MLflow Tracking component is an API that logs and loads the parameters, code
 [comment]: <> (Dockerfile: View Dockerfile)
 
 [comment]: <> (notbooks/*.ipynb)
-
-```
-mlflow ui
-``
