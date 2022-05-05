@@ -133,4 +133,5 @@ dmypy.json
 mlruns/
 model/
 csv/
-*.csv
+nohup.out
+ranking_model/

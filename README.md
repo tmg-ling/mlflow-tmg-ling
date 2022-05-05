@@ -3,6 +3,7 @@
 
 ![AWS Cloud build](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoidkVqS2xWdGpvOHFCZ2hFd3BqalJoQ3gvT21GUXg1YjNxd0FFRFhyRStnSkVIT3dhNmloNksxVlNXTnBOSm8zVFQxdFFzbGNVSVZ2cHBVT3ZVb2tBOFlrPSIsIml2UGFyYW1ldGVyU3BlYyI6IjdhRnNJZ1pCN3BRKy92b0wiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=main)
 
+### About
 
 MLflow is an open-source platform for managing ML lifecycles, including experimentation, deployment, and creation of a central model registry.
 The MLflow Tracking component is an API that logs and loads the parameters, code versions, and artifacts from ML model experiments.
@@ -16,30 +17,49 @@ The MLflow Tracking component is an API that logs and loads the parameters, code
 - mlflow.log_metrics to log numeric values
 - mlflow.log_artifact to log the entire file that execute the function to ensure traceability of the model and codee that originated in the run
 
+### Setup
+
+1. Start a virtual enviornment
+
 ```bash
 python -m venv ~/.venv                  
-source ~/.venv/bin/activate  # mlops-tmg-ling
+source ~/.venv/bin/activate 
 ```
 
+install lint format test
+
+2. Make install requirements
+
+Need the following files to install requirement enviornment
+- Makefile: Makefile
+- requirements.txt: requirements.txt
+
+```bash
+make all
 ```
+
+3. Run training jobs
+
+parser.add_argument("--embedding_dimension", default = 96, type = int, help = "embedding_dimension")
+parser.add_argument("--batch_size", default = 16384, type = int, help = "batch_size")
+parser.add_argument("--learning_rate", default = 0.05, type = int, help = "learning_rate")
+
+
+```python
+python train_gift.py --experiment_name gift_model --embedding_dimension 96 --batch_size 16384 --learning_rate 0.05
+```
+or run python in background
+```angular2html
+nohup python train_gift.py --experiment_name gift_model --embedding_dimension 96 --batch_size 16384 --learning_rate 0.1 &
+```
+
+5. Run mlflow ui
+```bash
 mlflow ui
 ```
 
-- Makefile: View Makefile
-- requirements.txt: View requirements.txt
+4. Run mlflow job
 
-[comment]: <> (cli.py: View cli.py)
+5. Start the serving API
 
-[comment]: <> (utilscli.py: View utilscli.py)
-
-[comment]: <> (app.py: View app.py)
-
-[comment]: <> (mlib.py: View mlib.pyModel Handling Library)
-
-[comment]: <> (htwtmlb.csv: View CSV Useful for input scaling)
-
-[comment]: <> (model.joblib: View model.joblib)
-
-[comment]: <> (Dockerfile: View Dockerfile)
-
-[comment]: <> (notbooks/*.ipynb)
+6. Test the API
