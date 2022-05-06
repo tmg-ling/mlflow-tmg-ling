@@ -22,11 +22,9 @@ The MLflow Tracking component is an API that logs and loads the parameters, code
 1. Start a virtual enviornment
 
 ```bash
-python -m venv ~/.venv                  
+python3 -m venv ~/.venv                  
 source ~/.venv/bin/activate 
 ```
-
-install lint format test
 
 2. Make install requirements
 
