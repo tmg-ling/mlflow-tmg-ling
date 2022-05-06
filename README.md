@@ -38,11 +38,6 @@ make all
 
 3. Run training jobs
 
-parser.add_argument("--embedding_dimension", default = 96, type = int, help = "embedding_dimension")
-parser.add_argument("--batch_size", default = 16384, type = int, help = "batch_size")
-parser.add_argument("--learning_rate", default = 0.05, type = int, help = "learning_rate")
-
-
 ```python
 python train_gift.py --experiment_name gift_model --embedding_dimension 96 --batch_size 16384 --learning_rate 0.05
 ```
