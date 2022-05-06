@@ -175,9 +175,9 @@ def main(argv):
 	conf["int_features"] = []
 
 	# Fetch the data
-	dataset, nrow = load_training_gift(
-		"csv/65cb05a3-e45a-4a15-915b-90cf082dc203.csv", ""
-	)
+	filename = "s3://for-you-payer-training-data/65cb05a3-e45a-4a15-915b-90cf082dc203.csv"
+	# filename = "csv/65cb05a3-e45a-4a15-915b-90cf082dc203.csv"
+	dataset, nrow = load_training_gift(filename, "")
 	gift = prepare_training_data_gift(dataset)
 	shuffled = gift.shuffle(nrow, seed = 42, reshuffle_each_iteration = False)
 
