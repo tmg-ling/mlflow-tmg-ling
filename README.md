@@ -53,7 +53,7 @@ python train_gift.py --experiment_name gift_model --embedding_dimension 96 --bat
 or run python in background
 
 ```bash
-nohup python train_gift.py --experiment_name gift_model --embedding_dimension 96 --batch_size 16384 --learning_rate 0.1 &
+nohup python train_gift.py --experiment_name gift_model --embedding_dimension 96 --batch_size 16384 --learning_rate 0.1 > nohup.out 2>&1 &
 ```
 
 5. Run mlflow ui
@@ -64,6 +64,12 @@ mlflow ui
 
 4. Run mlflow job
 
-5. Start the serving API
+```
+yum update -y
+yum install -y curl
+http://localhost:5000
+```
 
-6. Test the API
+6. Start the serving API
+
+7. Test the API
