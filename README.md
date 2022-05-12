@@ -1,5 +1,4 @@
-
-[![MLflow testing build](https://github.com/tmg-ling/mlops-tmg-ling/actions/workflows/main.yml/badge.svg)](https://github.com/tmg-ling/mlops-tmg-ling/actions/workflows/main.yml)
+[![MLflow testing build](https://github.com/tmg-ling/mlflow-tmg-ling/actions/workflows/main.yml/badge.svg)](https://github.com/tmg-ling/mlflow-tmg-ling/actions/workflows/main.yml)
 
 ![AWS Cloud build](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoidkVqS2xWdGpvOHFCZ2hFd3BqalJoQ3gvT21GUXg1YjNxd0FFRFhyRStnSkVIT3dhNmloNksxVlNXTnBOSm8zVFQxdFFzbGNVSVZ2cHBVT3ZVb2tBOFlrPSIsIml2UGFyYW1ldGVyU3BlYyI6IjdhRnNJZ1pCN3BRKy92b0wiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=main)
 
@@ -22,11 +21,9 @@ The MLflow Tracking component is an API that logs and loads the parameters, code
 1. Start a virtual enviornment
 
 ```bash
-python -m venv ~/.venv                  
+python3 -m venv ~/.venv                  
 source ~/.venv/bin/activate 
 ```
-
-install lint format test
 
 2. Make install requirements
 
@@ -39,11 +36,12 @@ make all
 ```
 
 3. Run training jobs
-```python
+
+```bash
 python train_gift.py --experiment_name gift_model --embedding_dimension 96 --batch_size 16384 --learning_rate 0.05
 ```
 or run python in background
-```angular2html
+```bash
 nohup python train_gift.py --experiment_name gift_model --embedding_dimension 96 --batch_size 16384 --learning_rate 0.1 &
 ```
 
