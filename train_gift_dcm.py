@@ -1,7 +1,6 @@
 # in case this is run outside of conda environment with python2
 import argparse
 import os
-import sys
 from collections import defaultdict
 
 import mlflow
@@ -119,6 +118,8 @@ def load_data_file_gift(file, stats):
         "order_time": "0",
         "count": "0",
     }
+
+    training_df = training_df.sample(n=1000)
     training_df.fillna(value=values, inplace=True)
     return training_df
 
@@ -156,19 +157,23 @@ def prepare_training_data_gift(train_ds):
     return training_ds
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument(
-    "--experiment_name", default="gift_model", type=str, help="experiment_name"
-)
-parser.add_argument(
-    "--embedding_dimension", default=96, type=int, help="embedding_dimension"
-)
-parser.add_argument("--batch_size", default=16384, type=int, help="batch_size")
-parser.add_argument("--learning_rate", default=0.05, type=float, help="learning_rate")
+def parse_args():
+    parser = argparse.ArgumentParser(description="Gift model using DCM")
+    parser.add_argument(
+        "--experiment_name", default="gift_model", type=str, help="experiment_name"
+    )
+    parser.add_argument(
+        "--embedding_dimension", default=96, type=int, help="embedding_dimension"
+    )
+    parser.add_argument("--batch_size", default=16384, type=int, help="batch_size")
+    parser.add_argument(
+        "--learning_rate", default=0.05, type=float, help="learning_rate"
+    )
+    return parser.parse_args()
 
 
-def main(argv):
-    args = parser.parse_args(argv[1:])
+def main():
+    args = parse_args()
     conf = defaultdict(dict)
     conf["embedding_dimension"] = args.embedding_dimension
     conf["batch_size"] = args.batch_size
@@ -179,7 +184,6 @@ def main(argv):
     conf["int_features"] = []
 
     # Fetch the data
-
     local_file = "csv/65cb05a3-e45a-4a15-915b-90cf082dc203.csv"
     if not os.path.exists(local_file) and not os.path.isfile(local_file):
         filename = (
@@ -226,8 +230,8 @@ def main(argv):
     model.fit(ds_train, epochs=conf["epochs"], verbose=False)
     metrics = model.evaluate(ds_test, return_dict=True)
     # tf.keras.models.save_model(model, "./model")
-
-    with mlflow.start_run(run_name="Gift Model Experiments") as run:
+    mlflow.set_experiment("gift dcm")
+    with mlflow.start_run(run_name="Gift Model Experiments Using DCM") as run:
         run_id = run.info.run_uuid
         experiment_id = run.info.experiment_id
         mlflow.log_param("size", nrow)
@@ -240,7 +244,8 @@ def main(argv):
         mlflow.log_metric("RMSE", metrics["RMSE"])
         print(f"runid: {run_id}")
         print(f"experimentid: {experiment_id}")
+        mlflow.end_run()
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main()
