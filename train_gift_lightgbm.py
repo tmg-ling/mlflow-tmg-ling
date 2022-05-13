@@ -229,7 +229,7 @@ def main():
     print(test_acc)
     boost = pred_model.booster_
 
-    mlflow.set_experiment("train_gift-lightgbm")
+    # mlflow.set_experiment("train_gift-lightgbm")
     with mlflow.start_run(run_name="Gift Model Experiments using Lightgbm") as run:
         run_id = run.info.run_uuid
         experiment_id = run.info.experiment_id

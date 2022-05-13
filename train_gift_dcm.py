@@ -229,8 +229,9 @@ def main():
     model.compile(optimizer=tf.keras.optimizers.Adam(conf["learning_rate"]))
     model.fit(ds_train, epochs=conf["epochs"], verbose=False)
     metrics = model.evaluate(ds_test, return_dict=True)
+
     # tf.keras.models.save_model(model, "./model")
-    mlflow.set_experiment("gift dcm")
+    # mlflow.set_experiment("gift dcm")
     with mlflow.start_run(run_name="Gift Model Experiments Using DCM") as run:
         run_id = run.info.run_uuid
         experiment_id = run.info.experiment_id
