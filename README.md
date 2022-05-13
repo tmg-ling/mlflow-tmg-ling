@@ -48,14 +48,14 @@ make all
 
 - Train a model 
 ```bash
-python train_gift_dcm.py --experiment_name gift_model --embedding_dimension 96 --batch_size 16384 --learning_rate 0.05
+python train_gift_dcm.py --experiment_name gift_model --batch_size 16384 --learning_rate 0.05
 python train_gift_lightgbm.py --n_estimators 300 --learning_rate 1
 ```
 
 or run python in background
 
 ```bash
-nohup python train_gift_dcm.py --experiment_name gift_model --embedding_dimension 96 --batch_size 16384 --learning_rate 0.1 > nohup.out 2>&1 &
+nohup python train_gift_dcm.py --experiment_name gift_model --batch_size 16384 --learning_rate 0.1 > nohup.out 2>&1 &
 nohup python python train_gift_lightgbm.py --n_estimators 300 --learning_rate 1 > nohup.out 2>&1 &
 ```
 
