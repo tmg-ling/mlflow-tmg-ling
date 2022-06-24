@@ -59,9 +59,9 @@ val_loss = history.history["val_loss"][-1]
 val_acc = history.history["val_sparse_categorical_accuracy"][-1]
 
 print("train_loss: ", train_loss)
-print("train_accuracy: ", train_acc)
+print("train_acc: ", train_acc)
 print("val_loss: ", val_loss)
-print("val_accuracy: ", val_acc)
+print("val_acc: ", val_acc)
 
 tf.keras.models.save_model(model, "./model")
 
@@ -72,9 +72,9 @@ with mlflow.start_run(run_name="Gift Model Experiments") as run:
     mlflow.log_param("learning_rate", learning_rate)
     mlflow.log_param("epochs", epochs)
     mlflow.log_metric("train_loss", train_loss)
-    mlflow.log_metric("train_accuracy", train_acc)
+    mlflow.log_metric("train_acc", train_acc)
     mlflow.log_metric("val_loss", val_loss)
-    mlflow.log_metric("val_accuracy", val_acc)
+    mlflow.log_metric("val_acc", val_acc)
     mlflow.log_artifacts("./model")
     print(f"runid: {run_id}")
     print(f"experimentid: {experiment_id}")

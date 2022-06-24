@@ -174,12 +174,17 @@ def main():
     FEATURES = ["broadcaster_id", "viewer_id", "product_name", "ordered_time"]
     df_filled, feature_mappings = feature_encoder(df, FEATURES)
     df_filled["weight"] = 1
-    nrow = len(df_filled)
 
     # enable auto logging
     mlflow.lightgbm.autolog()
 
     with mlflow.start_run():
+        params = {
+            "n_estimators": args.n_estimators,
+            "num_leaves": args.num_leaves,
+            "learning_rate": args.learning_rate,
+            "max_depth": args.max_depth,
+        }
 
         pred_model, pred_metadata, train_df, test_df = build_model(
             X=df_filled[FEATURES],
@@ -187,12 +192,7 @@ def main():
             w=df_filled["weight"],
             categoricals=FEATURES,
             feature_mappings=feature_mappings,
-            params={
-                "n_estimators": args.n_estimators,
-                "num_leaves": args.num_leaves,
-                "learning_rate": args.learning_rate,
-                "max_depth": args.max_depth,
-            },
+            params=params,
             regression=True,
         )
         print(f"train_df: {len(train_df)}")
@@ -209,10 +209,7 @@ def main():
             )
         print(imps.sort_values('importance',ascending=False))
 
-        mlflow.log_param("train_df", len(train_df))
-        mlflow.log_param("test_df", len(test_df))
-        mlflow.log_metric("train_accuracy", train_acc)
-        mlflow.log_metric("test_acc", test_acc)
+
 
     # mlflow.set_experiment("train_gift-lightgbm")
     # with mlflow.start_run(run_name="Gift Model Experiments using Lightgbm") as run:
