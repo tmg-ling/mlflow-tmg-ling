@@ -49,7 +49,7 @@ make all
 - Train a model 
 ```bash
 python train_gift_dcm.py --experiment_name gift_model --batch_size 16384 --learning_rate 0.05
-python train_gift_lightgbm.py --n_estimators 300 --learning_rate 1
+python src/train_gift_lightgbm.py --n_estimators 300 --learning_rate 1
 ```
 
 or run python in background

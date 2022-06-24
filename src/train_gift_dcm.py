@@ -188,7 +188,7 @@ def main():
     conf["int_features"] = []
 
     # Fetch the data
-    local_file = "csv/65cb05a3-e45a-4a15-915b-90cf082dc203.csv"
+    local_file = "../csv/65cb05a3-e45a-4a15-915b-90cf082dc203.csv"
     if not os.path.exists(local_file) and not os.path.isfile(local_file):
         filename = (
             "s3://for-you-payer-training-data/65cb05a3-e45a-4a15-915b-90cf082dc203.csv"

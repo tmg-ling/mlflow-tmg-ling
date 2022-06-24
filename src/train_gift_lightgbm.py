@@ -24,15 +24,10 @@ warnings.filterwarnings("ignore")
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Gift model using DCM")
-    parser.add_argument(
-        "--experiment_name", default="gift_model", type=str, help="experiment_name"
-    )
+    parser.add_argument("--experiment_name", default="gift_model", type=str, help="experiment_name")
     parser.add_argument("--n_estimators", default=300, type=int, help="n_estimators")
     parser.add_argument("--num_leaves", default=164, type=int, help="num_leaves")
-    parser.add_argument(
-        "--learning_rate", default=0.1, type=float, help="learning_rate"
-    )
-
+    parser.add_argument("--learning_rate", default=0.1, type=float, help="learning_rate")
     parser.add_argument("--max_depth", default=-1, type=float, help="max_depth")
     return parser.parse_args()
 
@@ -111,7 +106,6 @@ def prediction_metrics(var_y, var_y_pred, weights=None):
 
 
 def evaluate(
-    X: pd.DataFrame,
     y: pd.Series,
     w: pd.Series,
     y_pred: pd.Series,
@@ -133,9 +127,9 @@ def build_model(
     X: pd.DataFrame,
     y: pd.Series,
     w: pd.Series = None,
-    categoricals: Iterable[str] = [],
-    feature_mappings: Dict = {},
-    params: Dict[str, any] = {},
+    categoricals: Iterable[str] = None,
+    feature_mappings: Dict = None,
+    params: Dict[str, any] = None,
     regression: bool = False,
 ) -> Tuple[lgb.LGBMModel, Dict[str, any], pd.DataFrame, pd.DataFrame]:
     """take the sql data and output model and metadata"""
@@ -156,12 +150,12 @@ def build_model(
     model.fit(X, y, w, categorical_feature=categoricals)
     train_df["y_pred"] = predict(model, X, regression)
 
-    metadata["train_accuracy"] = evaluate(X, y, w, train_df["y_pred"], regression)
+    metadata["train_accuracy"] = evaluate(y, w, train_df["y_pred"], regression)
     metadata["train_accuracy"]["data_type"] = "train"
 
     X, y, w = decompose(test_df)
     test_df["y_pred"] = predict(model, X, regression)
-    metadata["test_accuracy"] = evaluate(X, y, w, test_df["y_pred"], regression)
+    metadata["test_accuracy"] = evaluate(y, w, test_df["y_pred"], regression)
     metadata["test_accuracy"]["data_type"] = "test"
     return model, metadata, train_df, test_df
 
@@ -172,9 +166,7 @@ def main():
 
     local_file = "csv/65cb05a3-e45a-4a15-915b-90cf082dc203.csv"
     if not os.path.exists(local_file) and not os.path.isfile(local_file):
-        filename = (
-            "s3://for-you-payer-training-data/65cb05a3-e45a-4a15-915b-90cf082dc203.csv"
-        )
+        filename = ("s3://for-you-payer-training-data/65cb05a3-e45a-4a15-915b-90cf082dc203.csv")
     else:
         filename = local_file
 
@@ -183,28 +175,6 @@ def main():
     df_filled, feature_mappings = feature_encoder(df, FEATURES)
     df_filled["weight"] = 1
     nrow = len(df_filled)
-
-    # params = {
-    #     "boosting": "gbdt",
-    #     "metric": ["mse", "mae"],
-    #     # 'metric' : 'map',
-    #     "objective": "regression",
-    #     "learning_rate": 0.017,
-    #     "max_depth": -1,
-    #     "min_child_samples": 20,
-    #     "max_bin": 255,
-    #     "subsample": 0.85,
-    #     "subsample_freq": 10,
-    #     "colsample_bytree": 0.8,
-    #     "min_child_weight": 0.001,
-    #     "subsample_for_bin": 200000,
-    #     "min_split_gain": 0,
-    #     "reg_alpha": 0,
-    #     "reg_lambda": 0,
-    #     "num_leaves": 51,
-    #     "nthread": 10,
-    #     # 'is_unbalance': True,
-    # }
 
     # enable auto logging
     # mlflow.lightgbm.autolog()
@@ -223,11 +193,19 @@ def main():
         },
         regression=True,
     )
+    print(f"train_df: {len(train_df)}")
+    print(f"test_df: {len(test_df)}")
     train_acc = pred_metadata["train_accuracy"]
     print(train_acc)
     test_acc = pred_metadata["test_accuracy"]
     print(test_acc)
+
     boost = pred_model.booster_
+    imps = pd.DataFrame(
+        {'feature': boost.feature_name(),
+         'importance': boost.feature_importance()}
+        )
+    print(imps.sort_values('importance',ascending=False))
 
     # mlflow.set_experiment("train_gift-lightgbm")
     with mlflow.start_run(run_name="Gift Model Experiments using Lightgbm") as run:
