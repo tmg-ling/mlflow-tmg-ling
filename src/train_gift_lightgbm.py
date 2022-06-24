@@ -177,51 +177,58 @@ def main():
     nrow = len(df_filled)
 
     # enable auto logging
-    # mlflow.lightgbm.autolog()
+    mlflow.lightgbm.autolog()
 
-    pred_model, pred_metadata, train_df, test_df = build_model(
-        X=df_filled[FEATURES],
-        y=df_filled["cnt"],
-        w=df_filled["weight"],
-        categoricals=FEATURES,
-        feature_mappings=feature_mappings,
-        params={
-            "n_estimators": args.n_estimators,
-            "num_leaves": args.num_leaves,
-            "learning_rate": args.learning_rate,
-            "max_depth": args.max_depth,
-        },
-        regression=True,
-    )
-    print(f"train_df: {len(train_df)}")
-    print(f"test_df: {len(test_df)}")
-    train_acc = pred_metadata["train_accuracy"]
-    print(train_acc)
-    test_acc = pred_metadata["test_accuracy"]
-    print(test_acc)
+    with mlflow.start_run():
 
-    boost = pred_model.booster_
-    imps = pd.DataFrame(
-        {'feature': boost.feature_name(),
-         'importance': boost.feature_importance()}
+        pred_model, pred_metadata, train_df, test_df = build_model(
+            X=df_filled[FEATURES],
+            y=df_filled["cnt"],
+            w=df_filled["weight"],
+            categoricals=FEATURES,
+            feature_mappings=feature_mappings,
+            params={
+                "n_estimators": args.n_estimators,
+                "num_leaves": args.num_leaves,
+                "learning_rate": args.learning_rate,
+                "max_depth": args.max_depth,
+            },
+            regression=True,
         )
-    print(imps.sort_values('importance',ascending=False))
+        print(f"train_df: {len(train_df)}")
+        print(f"test_df: {len(test_df)}")
+        train_acc = pred_metadata["train_accuracy"]
+        print(train_acc)
+        test_acc = pred_metadata["test_accuracy"]
+        print(test_acc)
 
-    # mlflow.set_experiment("train_gift-lightgbm")
-    with mlflow.start_run(run_name="Gift Model Experiments using Lightgbm") as run:
-        run_id = run.info.run_uuid
-        experiment_id = run.info.experiment_id
-        mlflow.log_param("size", nrow)
-        mlflow.log_param("n_estimators", args.n_estimators)
-        mlflow.log_param("num_leaves", args.num_leaves)
-        mlflow.log_param("max_depth", args.max_depth)
-        mlflow.log_param("learning_rate", args.learning_rate)
+        boost = pred_model.booster_
+        imps = pd.DataFrame(
+            {'feature': boost.feature_name(),
+             'importance': boost.feature_importance()}
+            )
+        print(imps.sort_values('importance',ascending=False))
+
+        mlflow.log_param("train_df", len(train_df))
+        mlflow.log_param("test_df", len(test_df))
         mlflow.log_metric("train_accuracy", train_acc)
         mlflow.log_metric("test_acc", test_acc)
-        mlflow.end_run()
-        print(f"artfact_uri = {mlflow.get_artifact_uri()}")
-        print(f"runid: {run_id}")
-        print(f"experimentid: {experiment_id}")
+
+    # mlflow.set_experiment("train_gift-lightgbm")
+    # with mlflow.start_run(run_name="Gift Model Experiments using Lightgbm") as run:
+    #     run_id = run.info.run_uuid
+    #     experiment_id = run.info.experiment_id
+    #     mlflow.log_param("size", nrow)
+    #     mlflow.log_param("n_estimators", args.n_estimators)
+    #     mlflow.log_param("num_leaves", args.num_leaves)
+    #     mlflow.log_param("max_depth", args.max_depth)
+    #     mlflow.log_param("learning_rate", args.learning_rate)
+    #     mlflow.log_metric("train_accuracy", train_acc)
+    #     mlflow.log_metric("test_acc", test_acc)
+    #     mlflow.end_run()
+    #     print(f"artfact_uri = {mlflow.get_artifact_uri()}")
+    #     print(f"runid: {run_id}")
+    #     print(f"experimentid: {experiment_id}")
 
 
 if __name__ == "__main__":
