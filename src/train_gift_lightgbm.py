@@ -24,10 +24,14 @@ warnings.filterwarnings("ignore")
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Gift model using DCM")
-    parser.add_argument("--experiment_name", default="gift_model", type=str, help="experiment_name")
+    parser.add_argument(
+        "--experiment_name", default="gift_model", type=str, help="experiment_name"
+    )
     parser.add_argument("--n_estimators", default=300, type=int, help="n_estimators")
     parser.add_argument("--num_leaves", default=164, type=int, help="num_leaves")
-    parser.add_argument("--learning_rate", default=0.1, type=float, help="learning_rate")
+    parser.add_argument(
+        "--learning_rate", default=0.1, type=float, help="learning_rate"
+    )
     parser.add_argument("--max_depth", default=-1, type=float, help="max_depth")
     return parser.parse_args()
 
@@ -166,7 +170,9 @@ def main():
 
     local_file = "csv/65cb05a3-e45a-4a15-915b-90cf082dc203.csv"
     if not os.path.exists(local_file) and not os.path.isfile(local_file):
-        filename = ("s3://for-you-payer-training-data/65cb05a3-e45a-4a15-915b-90cf082dc203.csv")
+        filename = (
+            "s3://for-you-payer-training-data/65cb05a3-e45a-4a15-915b-90cf082dc203.csv"
+        )
     else:
         filename = local_file
 
@@ -178,14 +184,15 @@ def main():
     # enable auto logging
     mlflow.lightgbm.autolog()
 
-    with mlflow.start_run():
+    with mlflow.start_run(run_name="Gift Model Experiments using Lightgbm") as run:
+        print(f"run_id = {run.info.run_uuid}")
+        print(f"experiment_id = {run.info.experiment_id}")
         params = {
             "n_estimators": args.n_estimators,
             "num_leaves": args.num_leaves,
             "learning_rate": args.learning_rate,
             "max_depth": args.max_depth,
         }
-
         pred_model, pred_metadata, train_df, test_df = build_model(
             X=df_filled[FEATURES],
             y=df_filled["cnt"],
@@ -204,12 +211,10 @@ def main():
 
         boost = pred_model.booster_
         imps = pd.DataFrame(
-            {'feature': boost.feature_name(),
-             'importance': boost.feature_importance()}
-            )
-        print(imps.sort_values('importance',ascending=False))
-
-
+            {"feature": boost.feature_name(), "importance": boost.feature_importance()}
+        )
+        print(imps.sort_values("importance", ascending=False))
+        mlflow.end_run()
 
     # mlflow.set_experiment("train_gift-lightgbm")
     # with mlflow.start_run(run_name="Gift Model Experiments using Lightgbm") as run:

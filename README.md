@@ -77,6 +77,22 @@ Take the PID and kill the process
 mlflow run  -P alpha=0.4
 ```
 
+7. Build th docker image
+
+```
+docker build -t mlflow-tmg-ling .
+```
+
+9. Deploy the model in SageMaker using MLflow
+
+```
+experiment_id = 0
+run_id = e820dfefbda4487b8abf6ecdce65d728
+
+cd mlruns/0/e820dfefbda4487b8abf6ecdce65d728/artifacts/model
+mlflow sagemaker build-and-push-container
+```
+
 ```
 yum update -y
 yum install -y curl
