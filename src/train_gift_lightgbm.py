@@ -170,9 +170,7 @@ def main():
 
     local_file = "csv/65cb05a3-e45a-4a15-915b-90cf082dc203.csv"
     if not os.path.exists(local_file) and not os.path.isfile(local_file):
-        filename = (
-            "s3://tmg-machine-learning-models-dev/for-you-payer-training-data/65cb05a3-e45a-4a15-915b-90cf082dc203.csv"
-        )
+        filename = "s3://tmg-machine-learning-models-dev/for-you-payer-training-data/65cb05a3-e45a-4a15-915b-90cf082dc203.csv"
     else:
         filename = local_file
 
@@ -183,7 +181,6 @@ def main():
 
     # enable auto logging
     mlflow.lightgbm.autolog()
-
     with mlflow.start_run(run_name="Gift Model Experiments using Lightgbm") as run:
         print(f"run_id = {run.info.run_uuid}")
         print(f"experiment_id = {run.info.experiment_id}")
@@ -216,11 +213,9 @@ def main():
         print(imps.sort_values("importance", ascending=False))
         mlflow.end_run()
 
-    # mlflow.set_experiment("train_gift-lightgbm")
     # with mlflow.start_run(run_name="Gift Model Experiments using Lightgbm") as run:
     #     run_id = run.info.run_uuid
     #     experiment_id = run.info.experiment_id
-    #     mlflow.log_param("size", nrow)
     #     mlflow.log_param("n_estimators", args.n_estimators)
     #     mlflow.log_param("num_leaves", args.num_leaves)
     #     mlflow.log_param("max_depth", args.max_depth)
