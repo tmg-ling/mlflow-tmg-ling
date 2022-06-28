@@ -74,6 +74,7 @@ def main():
 
         # log metrics
         mlflow.log_metrics({"log_loss": loss, "accuracy": acc})
+        mlflow.end_run()
 
 
 if __name__ == "__main__":
