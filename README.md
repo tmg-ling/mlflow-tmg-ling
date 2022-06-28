@@ -8,22 +8,6 @@ MLflow is an open-source platform for managing ML lifecycles, including experime
 central model registry. The MLflow Tracking component is an API that logs and loads the parameters, code versions, and
 artifacts from ML model experiments.
 
-- mlflow.tensorflow.autolog() enables you to automatically log the experiment in the local directory. It captures the
-  metrics produced by the underlying ML library in use. MLflow Tracking is the module responsible for handling metrics
-  and logs. By default, the metadata of an MLflow run is stored in the local filesystem.
-    - The MLmodel file is the main definition of the project from an MLflow project with information related to how to
-      run inference on the current model.
-    - The metrics folder contains the training score value of this particular run of the training process, which can be
-      used to benchmark the model with further model improvements down the line.
-    - The params folder on the first listing of folders contains the default parameters of the logistic regression
-      model, with the different default possibilities listed transparently and stored automatically.
-- mlflow.set_experiment()
-- mlflow.start_run() start and tear down the experiemnt in MLflow
-- mlflow.log_param to log string-type test parameters
-- mlflow.log_metrics to log numeric values
-- mlflow.log_artifact to log the entire file that execute the function to ensure traceability of the model and codee
-  that originated in the run
-
 ### Setup
 
 1. Start a virtual enviornment

@@ -1,8 +1,0 @@
-name: mlflow-tmg-ling
-
-docker_env:
-  image: mlflow-tmg-ling
-
-entry_points:
-  main:
-    command: "python src/train_gift_lightgbm.py "
