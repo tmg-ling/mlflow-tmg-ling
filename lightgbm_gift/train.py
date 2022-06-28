@@ -209,16 +209,16 @@ def main():
             categoricals = FEATURES,
             feature_mappings = feature_mappings,
             params = params,
-            regression = True,
+            regression = True
         )
 
         # evaluate model
         print(pred_metadata["test_accuracy"])
-        r2_score = pred_metadata["test_accuracy"]["raw_accuracy"]["r2_score"]
-        mean_squared_error = pred_metadata["test_accuracy"]["raw_accuracy"]["square_error"]
+        test_df_r2_score = pred_metadata["test_accuracy"]["raw_accuracy"]["r2_score"]
+        test_df_mse = pred_metadata["test_accuracy"]["raw_accuracy"]["square_error"]
 
         # log metrics
-        mlflow.log_metrics({"r2_score": r2_score, " mean_squared_error":  mean_squared_error})
+        mlflow.log_metrics({"r2_score": test_df_r2_score, " mean_squared_error":  test_df_mse})
         mlflow.end_run()
 
     boost = pred_model.booster_
