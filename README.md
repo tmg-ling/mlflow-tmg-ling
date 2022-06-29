@@ -51,6 +51,7 @@ mlflow run . -P learning_rate=0.01 -P n_estimators=300
 ```
 
 5. check model results and safely shut down
+
 ```
 mlflow ui
 ps -A | grep gunicorn
@@ -58,11 +59,13 @@ ps -A | grep gunicorn
 Take the PID and kill the process
 
 6.Build th docker image
+
 ```
 docker build -t mlflow-tmg-ling .
 ```
 
 7. Push the local image to ECR
+
 ```
 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 882748442234.dkr.ecr.us-east-1.amazonaws.com
 docker tag mlflow-tmg-ling:latest 882748442234.dkr.ecr.us-east-1.amazonaws.com/mlflow-pyfunc:latest
@@ -76,10 +79,14 @@ docker push 882748442234.dkr.ecr.us-east-1.amazonaws.com/mlflow-pyfunc:latest
 ```
 
 8. Deploy image to Sagemaker
+
 ```
 python deploy.py
 ```
 
-10. Start the serving API
+9. Start the serving API
 
-11. Test the API
+```
+mlflow models serve --model-uri runs:/<run-id>/model
+curl -d '{"columns":[0],"index":[0,1],"data":[[1],[-1]]}' -H 'Content-Type: application/json'  localhost:5000/invocations
+```
