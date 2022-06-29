@@ -5,6 +5,6 @@ format:
 	black src/*.py
 
 lint:
-	pylint --disable=R,C light_gift/train.py
+	pylint --disable=R,C lightgbm_gift/train.py
 
 all: install lint format

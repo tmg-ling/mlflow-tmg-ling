@@ -47,43 +47,39 @@ nohup python python train_gift_lightgbm.py --n_estimators 300 --learning_rate 1 
 
 ```bash
 mlflow run .
-mlflow ui
+mlflow run . -P learning_rate=0.01 -P n_estimators=300 
 ```
 
-5. safely shut down
+5. check model results and safely shut down
 ```
+mlflow ui
 ps -A | grep gunicorn
 ```
 Take the PID and kill the process
 
-6. Run mlflow job
-
-```
-mlflow run  -P alpha=0.4
-```
-
-7. Build th docker image
-
+6.Build th docker image
 ```
 docker build -t mlflow-tmg-ling .
 ```
 
-9. Deploy the model in SageMaker using MLflow
-
+7. Push the local image to ECR
 ```
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 882748442234.dkr.ecr.us-east-1.amazonaws.com
+docker tag mlflow-tmg-ling:latest 882748442234.dkr.ecr.us-east-1.amazonaws.com/mlflow-pyfunc:latest
+
 experiment_id = 0
 run_id = e820dfefbda4487b8abf6ecdce65d728
-
 cd mlruns/0/e820dfefbda4487b8abf6ecdce65d728/artifacts/model
 mlflow sagemaker build-and-push-container
+aws ecr describe-images --repository-name mlflow-pyfunc
+docker push 882748442234.dkr.ecr.us-east-1.amazonaws.com/mlflow-pyfunc:latest
 ```
 
+8. Deploy image to Sagemaker
 ```
-yum update -y
-yum install -y curl
-http://localhost:5000
+python deploy.py
 ```
 
-7. Start the serving API
+10. Start the serving API
 
-8. Test the API
+11. Test the API
