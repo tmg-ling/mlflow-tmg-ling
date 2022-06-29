@@ -48,6 +48,8 @@ nohup python python train_gift_lightgbm.py --n_estimators 300 --learning_rate 1 
 ```bash
 mlflow run .
 mlflow run . -P learning_rate=0.01 -P n_estimators=300 
+mlflow run . -P learning_rate=0.01 -P n_estimators=300 --experiment-name Baseline_Predictions
+mlflow server --backend-store-uri sqlite:///:memory --default-artifact-root ./mlruns
 ```
 
 5. check model results and safely shut down

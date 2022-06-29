@@ -191,10 +191,15 @@ def main():
     df_filled["weight"] = 1
 
     # enable auto logging
-    mlflow.set_experiment("Baseline_Predictions")
+    # mlflow.set_experiment("Baseline_Predictions")
     mlflow.lightgbm.autolog()
 
-    with mlflow.start_run(run_name='lightgbm_gift_model_baseline') as run:
+    # with mlflow.start_run(run_name='lightgbm_gift_model_baseline') as run:
+    with mlflow.start_run() as run:
+        run_id = run.info.run_uuid
+        experiment_id = run.info.experiment_id
+        print(f"run_id: {run_id}")
+        print(f"experiment_id: {experiment_id}")
 
         # train model
         params = {
@@ -219,7 +224,7 @@ def main():
         test_df_mse = pred_metadata["test_accuracy"]["raw_accuracy"]["square_error"]
 
         # log metrics
-        mlflow.log_metrics({"r2_score": test_df_r2_score, " mean_squared_error":  test_df_mse})
+        mlflow.log_metrics({"r2_score": test_df_r2_score, " mean_squared_error": test_df_mse})
         mlflow.end_run()
 
     print(f"train_df: {len(train_df)}")
@@ -229,6 +234,12 @@ def main():
         {"feature": boost.feature_name(), "importance": boost.feature_importance()}
     )
     print(imps.sort_values("importance", ascending = False))
+
+    ## prediction
+    logged_model = f'mlruns/{experiment_id}/{run_id}/artifacts/model'
+    loaded_model = mlflow.pyfunc.load_model(logged_model)
+    pred = loaded_model.predict(test_df[:10])
+    print(pred)
 
 
 if __name__ == "__main__":
