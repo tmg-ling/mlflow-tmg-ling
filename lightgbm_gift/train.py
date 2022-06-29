@@ -191,9 +191,10 @@ def main():
     df_filled["weight"] = 1
 
     # enable auto logging
+    mlflow.set_experiment("Baseline_Predictions")
     mlflow.lightgbm.autolog()
 
-    with mlflow.start_run():
+    with mlflow.start_run(run_name='lightgbm_gift_model_baseline') as run:
 
         # train model
         params = {

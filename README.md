@@ -73,6 +73,7 @@ docker tag mlflow-tmg-ling:latest 882748442234.dkr.ecr.us-east-1.amazonaws.com/m
 experiment_id = 0
 run_id = e820dfefbda4487b8abf6ecdce65d728
 cd mlruns/0/e820dfefbda4487b8abf6ecdce65d728/artifacts/model
+
 mlflow sagemaker build-and-push-container
 aws ecr describe-images --repository-name mlflow-pyfunc
 docker push 882748442234.dkr.ecr.us-east-1.amazonaws.com/mlflow-pyfunc:latest
@@ -89,4 +90,6 @@ python deploy.py
 ```
 mlflow models serve --model-uri runs:/<run-id>/model
 curl -d '{"columns":[0],"index":[0,1],"data":[[1],[-1]]}' -H 'Content-Type: application/json'  localhost:5000/invocations
+
+curl http://127.0.0.1:5000/invocations -H 'Content-Type: application/json' -d '{"data":[[1,1,1,1,0,1,1,1,0,1,1,1,0,0]]}' [1]%
 ```
