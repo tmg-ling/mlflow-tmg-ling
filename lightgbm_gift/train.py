@@ -221,6 +221,8 @@ def main():
         mlflow.log_metrics({"r2_score": test_df_r2_score, " mean_squared_error":  test_df_mse})
         mlflow.end_run()
 
+    print(f"train_df: {len(train_df)}")
+    print(f"test_df: {len(test_df)}")
     boost = pred_model.booster_
     imps = pd.DataFrame(
         {"feature": boost.feature_name(), "importance": boost.feature_importance()}
