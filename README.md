@@ -84,7 +84,9 @@ docker push 882748442234.dkr.ecr.us-east-1.amazonaws.com/mlflow-pyfunc:latest
 8. Deploy image to Sagemaker
 
 ```
+aws ecr describe-images --repository-name mlflow-pyfunc
 python deploy.py
+aws sagemaker list-endpoints
 ```
 
 9. Start the serving API
