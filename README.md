@@ -34,9 +34,9 @@ make all
 
 ```bash
 python lightgbm_gift/train.py --n_estimators 300 --learning_rate 1
-python tfrs_dcm_gift/train.py --experiment_name gift_model --batch_size 16384 --learning_rate 0.05
+python tfrs_dcn_gift/train.py --experiment_name gift_model --batch_size 16384 --learning_rate 0.05
 
-nohup python tfrs_dcm_gift/train.py --experiment_name gift_model --batch_size 16384 --learning_rate 0.1 > nohup.out 2>&1 &
+nohup python tfrs_dcn_gift/train.py --experiment_name gift_model --batch_size 16384 --learning_rate 0.1 > nohup.out 2>&1 &
 nohup python python lightgbm_gift/train.py --n_estimators 300 --learning_rate 1 > nohup.out 2>&1 &
 ```
 

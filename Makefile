@@ -5,6 +5,6 @@ format:
 	black src/*.py
 
 lint:
-	pylint --disable=R,C tfrs_dcm_gift/train.py
+	pylint --disable=R,C tfrs_dcn_gift/train.py
 
 all: install lint format
