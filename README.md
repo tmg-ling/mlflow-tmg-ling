@@ -89,11 +89,8 @@ python deploy.py
 aws sagemaker list-endpoints
 ```
 
-9. Start the serving API
+9. Evaluate the prediction
 
 ```
-mlflow models serve --model-uri runs:/<run-id>/model
-curl -d '{"columns":[0],"index":[0,1],"data":[[1],[-1]]}' -H 'Content-Type: application/json'  localhost:5000/invocations
-
-curl http://127.0.0.1:5000/invocations -H 'Content-Type: application/json' -d '{"data":[[1,1,1,1,0,1,1,1,0,1,1,1,0,0]]}' [1]%
+python evaluate.py
 ```
