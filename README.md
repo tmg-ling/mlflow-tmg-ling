@@ -89,7 +89,7 @@ python deploy.py
 aws sagemaker list-endpoints
 ```
 
-9. Evaluate the prediction
+9. Evaluate the predictions
 
 ```
 python evaluate.py
