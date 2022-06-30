@@ -11,7 +11,7 @@ import tensorflow_recommenders as tfrs
 
 
 class DCN(tfrs.Model):
-    def __init__(self, conf, use_cross_layer, deep_layer_sizes, projection_dim=None):
+    def __init__(self, conf, use_cross_layer, deep_layer_sizes, projection_dim = None):
         super().__init__()
 
         self.embedding_dimension = conf["embedding_dimension"]
@@ -27,7 +27,7 @@ class DCN(tfrs.Model):
             self._embeddings[feature_name] = tf.keras.Sequential(
                 [
                     tf.keras.layers.experimental.preprocessing.StringLookup(
-                        vocabulary=vocabulary, mask_token=None
+                        vocabulary = vocabulary, mask_token = None
                     ),
                     tf.keras.layers.Embedding(
                         len(vocabulary) + 1,
@@ -43,7 +43,7 @@ class DCN(tfrs.Model):
             self._embeddings[feature_name] = tf.keras.Sequential(
                 [
                     tf.keras.layers.IntegerLookup(
-                        vocabulary=vocabulary, mask_value=None
+                        vocabulary = vocabulary, mask_value = None
                     ),
                     tf.keras.layers.Embedding(
                         len(vocabulary) + 1,
@@ -55,21 +55,21 @@ class DCN(tfrs.Model):
 
         if use_cross_layer:
             self._cross_layer = tfrs.layers.dcn.Cross(
-                projection_dim=projection_dim, kernel_initializer="glorot_uniform"
+                projection_dim = projection_dim, kernel_initializer = "glorot_uniform"
             )
         else:
             self._cross_layer = None
 
         self._deep_layers = [
-            tf.keras.layers.Dense(layer_size, activation="relu")
+            tf.keras.layers.Dense(layer_size, activation = "relu")
             for layer_size in deep_layer_sizes
         ]
 
         self._logit_layer = tf.keras.layers.Dense(1)
 
         self.task = tfrs.tasks.Ranking(
-            loss=tf.keras.losses.MeanSquaredError(),
-            metrics=[tf.keras.metrics.RootMeanSquaredError("RMSE")],
+            loss = tf.keras.losses.MeanSquaredError(),
+            metrics = [tf.keras.metrics.RootMeanSquaredError("RMSE")],
         )
 
     def call(self, features):
@@ -79,7 +79,7 @@ class DCN(tfrs.Model):
             embedding_fn = self._embeddings[feature_name]
             embeddings.append(embedding_fn(features[feature_name]))
 
-        x = tf.concat(embeddings, axis=1)
+        x = tf.concat(embeddings, axis = 1)
 
         # Build Cross Network
         if self._cross_layer is not None:
@@ -91,12 +91,12 @@ class DCN(tfrs.Model):
 
         return self._logit_layer(x)
 
-    def compute_loss(self, features, training=False):
+    def compute_loss(self, features, training = False):
         labels = features.pop("count")
         scores = self(features)
         return self.task(
-            labels=labels,
-            predictions=scores,
+            labels = labels,
+            predictions = scores,
         )
 
 
@@ -104,9 +104,9 @@ def load_data_file_gift(file, stats):
     print("loading file:" + file)
     training_df = pd.read_csv(
         file,
-        skiprows=[0],
-        names=["broadcaster", "viewer", "product_name", "order_time", "count"],
-        dtype={
+        skiprows = [0],
+        names = ["broadcaster", "viewer", "product_name", "order_time", "count"],
+        dtype = {
             "broadcaster": np.unicode,
             "viewer": np.unicode,
             "product_name": np.unicode,
@@ -123,8 +123,8 @@ def load_data_file_gift(file, stats):
         "count": "0",
     }
 
-    training_df = training_df.sample(n=1000)
-    training_df.fillna(value=values, inplace=True)
+    training_df = training_df.sample(n = 1000)
+    training_df.fillna(value = values, inplace = True)
     return training_df
 
 
@@ -155,28 +155,29 @@ def prepare_training_data_gift(train_ds):
             "order_time": x["order_time"],
             "count": x["count"],
         },
-        num_parallel_calls=tf.data.AUTOTUNE,
-        deterministic=False,
+        num_parallel_calls = tf.data.AUTOTUNE,
+        deterministic = False,
     )
     return training_ds
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Gift model using DCM")
+    parser = argparse.ArgumentParser(description = "Gift model using DCM")
     parser.add_argument(
-        "--experiment_name", default="gift_model", type=str, help="experiment_name"
+        "--experiment_name", default = "gift_model", type = str, help = "experiment_name"
     )
     parser.add_argument(
-        "--embedding_dimension", default=96, type=int, help="embedding_dimension"
+        "--embedding_dimension", default = 96, type = int, help = "embedding_dimension"
     )
-    parser.add_argument("--batch_size", default=16384, type=int, help="batch_size")
+    parser.add_argument("--batch_size", default = 16384, type = int, help = "batch_size")
     parser.add_argument(
-        "--learning_rate", default=0.05, type=float, help="learning_rate"
+        "--learning_rate", default = 0.05, type = float, help = "learning_rate"
     )
     return parser.parse_args()
 
 
 def main():
+    # parse command-line arguments
     args = parse_args()
     conf = defaultdict(dict)
     conf["embedding_dimension"] = args.embedding_dimension
@@ -198,7 +199,7 @@ def main():
 
     dataset, nrow = load_training_gift(filename, "")
     gift = prepare_training_data_gift(dataset)
-    shuffled = gift.shuffle(nrow, seed=42, reshuffle_each_iteration=False)
+    shuffled = gift.shuffle(nrow, seed = 42, reshuffle_each_iteration = False)
 
     ds_train = shuffled.take(int(nrow * 0.8))
     ds_train = ds_train.cache()
@@ -217,38 +218,38 @@ def main():
         print(f"{idx}: {feature_name}")
         vocab = gift.batch(1_000_000).map(
             lambda x: x[feature_name],
-            num_parallel_calls=tf.data.AUTOTUNE,
-            deterministic=False,
+            num_parallel_calls = tf.data.AUTOTUNE,
+            deterministic = False,
         )
         vocabularies[feature_name] = np.unique(np.concatenate(list(vocab)))
     conf["vocabularies"] = vocabularies
 
-    # Train the Model.
-    model = DCN(
-        conf=conf,
-        use_cross_layer=True,
-        deep_layer_sizes=[192, 192],
-        projection_dim=None,
-    )
-    model.compile(optimizer=tf.keras.optimizers.Adam(conf["learning_rate"]))
-    model.fit(ds_train, epochs=conf["epochs"], verbose=False)
-    metrics = model.evaluate(ds_test, return_dict=True)
-
     # tf.keras.models.save_model(model, "./model")
     # mlflow.set_experiment("gift dcm")
-    with mlflow.start_run(run_name="Gift Model Experiments Using DCM") as run:
+    with mlflow.start_run(run_name = "Gift Model Experiments Using DCM") as run:
         run_id = run.info.run_uuid
         experiment_id = run.info.experiment_id
+        print(f"runid: {run_id}")
+        print(f"experimentid: {experiment_id}")
+
+        # Train the Model.
+        model = DCN(
+            conf = conf,
+            use_cross_layer = True,
+            deep_layer_sizes = [192, 192],
+            projection_dim = None,
+        )
+        model.compile(optimizer = tf.keras.optimizers.Adam(conf["learning_rate"]))
+        model.fit(ds_train, epochs = conf["epochs"], verbose = False)
+        metrics = model.evaluate(ds_test, return_dict = True)
+
         mlflow.log_param("size", nrow)
         mlflow.log_param("embedding_dimension", conf["embedding_dimension"])
         mlflow.log_param("batch_size", conf["batch_size"])
         mlflow.log_param("learning_rate", conf["learning_rate"])
         mlflow.log_param("epochs", conf["epochs"])
         mlflow.log_param("str_feature", ",".join(conf["str_features"]))
-
         mlflow.log_metric("RMSE", metrics["RMSE"])
-        print(f"runid: {run_id}")
-        print(f"experimentid: {experiment_id}")
         mlflow.end_run()
 
 
