@@ -4,6 +4,8 @@ import os
 from collections import defaultdict
 
 import mlflow
+import mlflow.keras
+import mlflow.pyfunc
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -108,11 +110,11 @@ def load_data_file_gift(file):
         skiprows = [0],
         names = ["broadcaster", "viewer", "product_name", "order_time", "count"],
         dtype = {
-            "broadcaster": np.unicode,
-            "viewer": np.unicode,
-            "product_name": np.unicode,
-            "order_time": np.unicode,
-            "count": np.int,
+            "broadcaster": str,
+            "viewer": str,
+            "product_name": str,
+            "order_time": str,
+            "count": int,
         },
     )
 
@@ -121,7 +123,7 @@ def load_data_file_gift(file):
         "viewer": "unknown",
         "product_name": "unknown",
         "order_time": "0",
-        "count": "0",
+        "count": 0,
     }
 
     training_df = training_df.sample(n = 1000)
@@ -165,22 +167,26 @@ def prepare_training_data_gift(train_ds):
 def feature_mapping(train_ds, feature_name):
     vocab = train_ds.batch(1_000_000).map(
         lambda x: x[feature_name], num_parallel_calls = tf.data.AUTOTUNE, deterministic = False
-        )
+    )
     return np.unique(np.concatenate(list(vocab)))
+
+
+class DCNWrapper(mlflow.pyfunc.PythonModel):
+    def __init__(self):
+        self.dcn_model = None
+
+    def load_context(self, context):
+        self.dcn_model = tf.saved_model.load(context.artifacts["model_path"])
+
+    def predict(self, context, model_input):
+        return self.dcn_model
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description = "Gift model using DCM")
-    parser.add_argument(
-        "--experiment_name", default = "gift_model", type = str, help = "experiment_name"
-    )
-    parser.add_argument(
-        "--embedding_dimension", default = 96, type = int, help = "embedding_dimension"
-    )
+    parser.add_argument("--embedding_dimension", default = 96, type = int, help = "embedding_dimension")
     parser.add_argument("--batch_size", default = 16384, type = int, help = "batch_size")
-    parser.add_argument(
-        "--learning_rate", default = 0.05, type = float, help = "learning_rate"
-    )
+    parser.add_argument("--learning_rate", default = 0.05, type = float, help = "learning_rate")
     return parser.parse_args()
 
 
@@ -228,8 +234,10 @@ def main():
         vocabularies[feature] = feature_mapping(gift, feature)
     conf["vocabularies"] = vocabularies
 
-    # tf.keras.models.save_model(model, "./model")
+    # enable auto logging
     # mlflow.set_experiment("gift dcn")
+    mlflow.tensorflow.autolog()
+
     with mlflow.start_run(run_name = "Gift Model Experiments Using DCN") as run:
         run_id = run.info.run_uuid
         experiment_id = run.info.experiment_id
@@ -249,12 +257,16 @@ def main():
         print(f"metrics: {metrics}")
 
         mlflow.log_param("size", nrow)
-        mlflow.log_param("embedding_dimension", conf["embedding_dimension"])
-        mlflow.log_param("batch_size", conf["batch_size"])
-        mlflow.log_param("learning_rate", conf["learning_rate"])
-        mlflow.log_param("epochs", conf["epochs"])
-        mlflow.log_param("str_feature", ",".join(conf["str_features"]))
         mlflow.log_metric("RMSE", metrics["RMSE"])
+
+        # save the model
+        artifacts = {"model_path": "model"}
+        tf.saved_model.save(model, artifacts["model_path"])
+        mlflow.pyfunc.log_model(
+            artifact_path = artifacts["model_path"],
+            python_model = DCNWrapper(),
+            artifacts = artifacts,
+        )
         mlflow.end_run()
 
 
