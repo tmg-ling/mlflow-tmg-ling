@@ -12,8 +12,7 @@ artifacts from ML model experiments.
 
 1. Start a virtual enviornment
 
-```bash
-python3 -m venv ~/.venv                  
+```bash             
 source ~/.venv/bin/activate 
 ```
 
@@ -30,14 +29,26 @@ make all
 
 3. Run training jobs
 
-- Train a model 
+* Lightgbm native
 
 ```bash
 cd lightgbm_gift
 python train.py --n_estimators 300 --learning_rate 1
 nohup python train.py --experiment_name gift_model --batch_size 16384 --learning_rate 0.1 > nohup.out 2>&1 &
+```
 
+* Lightgbm regression
+
+```bash
 cd tfrs_dcn_gift
+python train.py --n_estimators 300 --learning_rate 1
+nohup python train.py --n_estimators 300 --learning_rate 1 > nohup.out 2>&1 &
+```
+
+* Deep and Cross Network
+
+```bash
+cd tfrs_dnn_gift
 python train.py --batch_size 16384 --learning_rate 0.05
 nohup python train.py --n_estimators 300 --learning_rate 1 > nohup.out 2>&1 &
 ```
@@ -57,6 +68,7 @@ mlflow server --backend-store-uri sqlite:///:memory --default-artifact-root ./ml
 mlflow ui
 ps -A | grep gunicorn
 ```
+
 Take the PID and kill the process
 
 6.Build th docker image
