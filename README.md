@@ -45,12 +45,20 @@ python train.py --n_estimators 300 --learning_rate 1
 nohup python train.py --n_estimators 300 --learning_rate 1 > nohup.out 2>&1 &
 ```
 
+* Two Tower Model
+
+```bash
+cd tfrs_two_tower_gift
+python train.py --batch_size 16384 --learning_rate 0.05 --broadcaster_embedding_dimension 96 --viewer_embedding_dimension 96 --top_k 1000
+nohup python train.py --batch_size 16384 --learning_rate 0.05 --broadcaster_embedding_dimension 96 --viewer_embedding_dimension 96 --top_k 1000 > nohup.out 2>&1 &
+```
+
 * Deep and Cross Network
 
 ```bash
 cd tfrs_dnn_gift
 python train.py --batch_size 16384 --learning_rate 0.05
-nohup python train.py --n_estimators 300 --learning_rate 1 > nohup.out 2>&1 &
+nohup python train.py --batch_size 16384 --learning_rate 0.05 > nohup.out 2>&1 &
 ```
 
 4. Run mlflow
