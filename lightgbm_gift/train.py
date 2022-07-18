@@ -235,7 +235,7 @@ def main():
     )
     print(imps.sort_values("importance", ascending = False))
 
-    ## prediction
+    # prediction
     logged_model = f'mlruns/{experiment_id}/{run_id}/artifacts/model'
     loaded_model = mlflow.pyfunc.load_model(logged_model)
     pred = loaded_model.predict(test_df[:10])
