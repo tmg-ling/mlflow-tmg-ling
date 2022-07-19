@@ -61,6 +61,14 @@ python train.py --batch_size 16384 --learning_rate 0.05
 nohup python train.py --batch_size 16384 --learning_rate 0.05 > nohup.out 2>&1 &
 ```
 
+* Listwise ranking
+
+```bash
+cd tfrs_listwise_ranking_gift
+python train.py --batch_size 16384 --learning_rate 0.05
+nohup python train.py --batch_size 16384 --learning_rate 0.05 > nohup.out 2>&1 &
+```
+
 4. Run mlflow
 
 ```bash
