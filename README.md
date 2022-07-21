@@ -8,6 +8,12 @@ MLflow is an open-source platform for managing ML lifecycles, including experime
 central model registry. The MLflow Tracking component is an API that logs and loads the parameters, code versions, and
 artifacts from ML model experiments.
 
+- Host a serverless MLflow server 
+- Set s3 as artifact and backend stores
+- Track SageMaker experiments with Mlflow
+- Register models trained in SageMaker in the MLflow Model Registry
+- Deploy an MLflow model into a SageMaker endpoint
+
 ### Setup
 
 1. Start a virtual enviornment
@@ -56,7 +62,7 @@ nohup python train.py --batch_size 16384 --learning_rate 0.05 --broadcaster_embe
 * Deep and Cross Network
 
 ```bash
-cd tfrs_dnn_gift
+cd tfrs_dcn_gift
 python train.py --batch_size 16384 --learning_rate 0.05
 nohup python train.py --batch_size 16384 --learning_rate 0.05 > nohup.out 2>&1 &
 ```
