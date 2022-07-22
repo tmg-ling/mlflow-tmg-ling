@@ -38,7 +38,7 @@ make all
 * Lightgbm native
 
 ```bash
-cd lightgbm_gift
+cd lightgbm_native
 python train.py --n_estimators 300 --learning_rate 1
 nohup python train.py --experiment_name gift_model --batch_size 16384 --learning_rate 0.1 > nohup.out 2>&1 &
 ```
@@ -46,7 +46,7 @@ nohup python train.py --experiment_name gift_model --batch_size 16384 --learning
 * Lightgbm regression
 
 ```bash
-cd tfrs_dcn_gift
+cd lightgbm_gift
 python train.py --n_estimators 300 --learning_rate 1
 nohup python train.py --n_estimators 300 --learning_rate 1 > nohup.out 2>&1 &
 ```
@@ -114,7 +114,7 @@ aws ecr describe-images --repository-name mlflow-pyfunc
 docker push 882748442234.dkr.ecr.us-east-1.amazonaws.com/mlflow-pyfunc:latest
 ```
 
-8. Deploy image to Sagemaker
+8. Deploy image to SageMaker
 
 ```
 aws ecr describe-images --repository-name mlflow-pyfunc
@@ -126,4 +126,40 @@ aws sagemaker list-endpoints
 
 ```
 python evaluate.py
+```
+
+10. Predict with Athena and SageMaker endpoint
+
+```
+DROP TABLE gift_testing_data;
+
+CREATE EXTERNAL TABLE gift_testing_data
+    (
+        `viewer_id` string,
+        `broadcaster_id` string,
+        `product_name` string,
+        `ordered_time` string,
+        `count` int
+    )
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
+WITH SERDEPROPERTIES (
+   'separatorChar' = ',',
+   'quoteChar' = '"',
+   'escapeChar' = '\\'
+   )
+STORED AS TEXTFILE
+LOCATION 's3://tmg-machine-learning-models-dev/for-you-payer-training-data/'
+TBLPROPERTIES('skip.header.line.count'='1')
+;
+USING EXTERNAL FUNCTION predict_avg_gift (broadcaster_id VARCHAR, 
+    viewer_id VARCHAR, 
+    product_name VARCHAR, 
+    ordered_time VARCHAR
+) 
+RETURNS DOUBLE 
+SAGEMAKER 'lightgbm-gift'
+SELECT 
+    predict_avg_gift("broadcaster_id","viewer_id", "product_name", "ordered_time") AS prediction
+FROM gift_testing_data
+LIMIT 10
 ```
